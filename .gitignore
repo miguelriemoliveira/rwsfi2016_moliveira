@@ -43,5 +43,10 @@ qtcreator-*
 # Emacs
 .#*
 
+# Vim
+*.swp
+
+gedit
+*~
 # Catkin custom files
 CATKIN_IGNORE
