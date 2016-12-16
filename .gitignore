@@ -45,8 +45,7 @@ qtcreator-*
 
 # Vim
 *.swp
+*.swo
 
-gedit
-*~
 # Catkin custom files
 CATKIN_IGNORE
