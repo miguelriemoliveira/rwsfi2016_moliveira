@@ -18,8 +18,6 @@
 #include <tf/transform_listener.h>
 #include <tf/transform_broadcaster.h>
 
-//my libraries includes
-#include <rwsfi2016_libs/player.h>
 
 /* _________________________________
    |                                 |
