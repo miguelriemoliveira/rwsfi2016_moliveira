@@ -31,18 +31,26 @@ using namespace ros;
 using namespace tf;
 using namespace boost;
 
-/**
- * @brief The namespace of this lib
- */
-namespace rwsfi2016_libs
+namespace rwsfi2016_libs ///The namespace of this lib
 {
 
-  /**
-   * @brief Contains a description and methods for a game player
-   */
-  class Player
+  class Player ///Contains a description and methods for a game player
+
   {
     public:
+      /* _________________________________
+         |                                 |
+         |          PROPPERTIES            |
+         |_________________________________| */
+      string name; ///the name of the player
+      string pet; ///the name of the animal (which defines the speed of the player)
+      shared_ptr<Team> red_team, green_team, blue_team, my_team, hunters_team, preys_team; ///The teams
+      double last_max_displacement_received;
+
+      NodeHandle node;///A handle to the ros node
+      TransformListener listener; ///the transform listener object
+      TransformBroadcaster broadcaster; ///The transform publisher object
+      shared_ptr<Subscriber> subscriber; ///A subscriber to the MakeAPlay message published by the referee
 
       /* _________________________________
          |                                 |
@@ -52,9 +60,10 @@ namespace rwsfi2016_libs
        * @brief The constructor
        * @param player_name the name of the player
        */
-      Player(string player_name)
+      Player(string player_name, string pet_name = "dog")
       {
         name = player_name; //set the name
+        setPetName(pet_name);//set the name of the animal
 
         //Create the three teams
         red_team = (shared_ptr<Team>) new Team("red");
@@ -87,10 +96,10 @@ namespace rwsfi2016_libs
         }
 
         //Print initial report
-        ROS_WARN("my player name is %s and I am on team %s", name.c_str(), my_team->name.c_str());
         my_team->printTeamInfo();
         hunters_team->printTeamInfo();
         preys_team->printTeamInfo();
+        ROS_WARN("I am %s, team %s. I will hunt %s but I am a little afraid of %s. My pet is %s", name.c_str(), my_team->name.c_str(), preys_team->name.c_str(), hunters_team->name.c_str(), pet.c_str());
 
         //Radomize a position inside the arena and warp the player to it
         struct timeval t1;      
@@ -103,19 +112,31 @@ namespace rwsfi2016_libs
         Duration(0.2).sleep(); //sleep a while to fill the tf buffer
 
         //initialize the subscriber
-        //_sub = (boost::shared_ptr<ros::Subscriber>) new ros::Subscriber;
-        //*_sub = node.subscribe("/game_move", 1, &this::moveCallback, this);
+        string make_a_play_topic = "/make_a_play/" + pet;
+        subscriber = (boost::shared_ptr<ros::Subscriber>) new ros::Subscriber;
+        *subscriber = node.subscribe(make_a_play_topic, 1, &Player::makeAPlayCallback, this);
 
+        ROS_INFO("Waiting for messages on topic %s ...", make_a_play_topic.c_str());
       }
 
       /**
        * @brief 
        * @param msg
        */
-      //void makeAPlayCallback(const rwsfi2016_msgs::GameMove& msg)
-      //{
+      void makeAPlayCallback(const rwsfi2016_msgs::MakeAPlay& msg)
+      {
+        last_max_displacement_received = msg.max_displacement; 
 
-      //}
+        //Call the virtual method play. Runs the default behaviour defined in PLayer class or a custom behaviour if the class MyPlayer defines the method play()
+        play(msg);
+
+      }
+
+      virtual void play(const rwsfi2016_msgs::MakeAPlay& msg)
+      {
+        ROS_WARN("Default play behaviour. You should implement a play method in your class MyPlayer");
+        move(msg.max_displacement, M_PI/30);
+      }
 
 
       /**
@@ -123,7 +144,7 @@ namespace rwsfi2016_libs
        * @param p an instance of the other player
        * @return distance in meters
        */
-      double getDistanceToPLayer(string other_player, double time_to_wait=DEFAULT_TIME)
+      double getDistanceToPlayer(string other_player, double time_to_wait=DEFAULT_TIME)
       {
         StampedTransform t; //The transform object
         Time now = Time::now(); //get the time
@@ -192,6 +213,12 @@ namespace rwsfi2016_libs
        */
       void move(double displacement, double turn_angle)
       {
+        if (displacement > last_max_displacement_received)
+        {
+          ROS_ERROR("%s, you cannot move more than %0.1f and you asked to move %0.1f. Are you trying to cheat? As a penalty, this time you will not move!", name.c_str(), last_max_displacement_received, displacement);
+          displacement = 0;
+        }
+
         //Put arguments withing authorized boundaries
         displacement = (displacement > 1 ? 1 : displacement);
         displacement = (displacement < 0 ? 0 : displacement);
@@ -226,35 +253,18 @@ namespace rwsfi2016_libs
       }
 
 
-      /* _________________________________
-         |                                 |
-         |          PROPPERTIES            |
-         |_________________________________| */
-      /**
-       * @brief the name of the player
-       */
-      string name;
-
-      /**
-       * @brief the transform listener object
-       */
-      TransformListener listener; //reads tfs from the ros system
-
-      /**
-       * @brief The transform publisher object
-       */
-      TransformBroadcaster broadcaster;
-
-      /**
-       * @brief The teams
-       */
-      shared_ptr<Team> red_team, green_team, blue_team;
-      shared_ptr<Team> my_team, hunters_team, preys_team;
-
-
-      shared_ptr<Subscriber> _sub; 
-
-      NodeHandle node;
+      void setPetName(string pet_name)
+      {
+        if (pet_name == "cheetah" || pet_name == "dog" ||pet_name == "cat" ||pet_name == "turtle")
+        {
+          pet = pet_name; 
+        }
+        else 
+        {
+          ROS_ERROR("The pet you have selected does not exist. You must choose: cheetah dog cat or turtle");
+            shutdown();
+        }
+      }
 
 
 
