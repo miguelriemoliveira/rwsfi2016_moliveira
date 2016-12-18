@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  tf
   rwsfi2016_libs
 )
 
@@ -130,16 +131,14 @@ include_directories(
 
 ## Declare a C++ executable
 # add_executable(player_moliveira_node src/player_moliveira_node.cpp)
-#add_executable(player_moliveira src/player_moliveira.cpp)
+add_executable(player_moliveira src/player_moliveira.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(player_moliveira_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-#target_link_libraries(player_moliveira
-  #${catkin_LIBRARIES}
-#)
+target_link_libraries(player_moliveira ${catkin_LIBRARIES})
 
 #############
 ## Install ##

@@ -43,15 +43,24 @@ namespace rwsfi2016_libs
       /**
        * @brief Constructor
        * @param team_name the team name
-       * @param player_names a list with the name of all the players on the team
        */
-      Team(string team_name, vector<string>& player_names)
+      Team(string team_name)
       {
         name = team_name; 
 
-        for (size_t i=0; i < player_names.size(); ++i)
+        vector<string> list_of_players;
+        NodeHandle node;
+        node.getParam(name, list_of_players);
+
+        if (!list_of_players.size())
         {
-          players.push_back(player_names[i]);
+          ROS_ERROR("Could not get %s team parameters. Make sure rosparams red, green and blue are set. For example:\nrosparam set red [\"red_player1\",\"red_player2\"]", name.c_str());
+          shutdown();
+        }
+
+        for (size_t i=0; i < list_of_players.size(); ++i)
+        {
+          players.push_back(list_of_players[i]);
         }
       }
 
@@ -67,6 +76,19 @@ namespace rwsfi2016_libs
       }
 
       /**
+       * @brief Checks if a player belongs to the team
+       * @param player_name the name of the player to check
+       * @return true or false, yes or no
+       */
+      bool playerBelongsToTeam(string player_name)
+      {
+        if(find(players.begin(), players.end(), player_name) != players.end())
+          return true;
+        else
+          return false;
+      }
+
+      /**
        * @brief The team name
        */
       string name;
@@ -75,6 +97,7 @@ namespace rwsfi2016_libs
        * @brief A list of the team's players
        */
       vector<string> players;
+
 
   };//end of class Team
 };//end of namespace rwsfi_libs

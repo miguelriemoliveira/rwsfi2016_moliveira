@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(rwsfi2016_libs)
+project(rwsfi2016_msgs)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  rwsfi2016_msgs
+  message_generation
   message_runtime
 )
 
@@ -46,11 +46,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  MakeAPlay.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -67,10 +66,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -102,9 +101,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES rwsfi2016_libs
-  CATKIN_DEPENDS roscpp rospy std_msgs rwsfi2016_msgs
+#  INCLUDE_DIRS include
+#  LIBRARIES rwsfi2016_msgs
+ CATKIN_DEPENDS std_msgs message_runtime
 #  DEPENDS system_lib
 )
 
@@ -116,33 +115,30 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
-  include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
- add_library(rwsfi2016_libs 
-   src/player.cpp src/team.cpp
- )
+# add_library(rwsfi2016_msgs
+#   src/${PROJECT_NAME}/rwsfi2016_msgs.cpp
+# )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-add_dependencies(rwsfi2016_libs ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-#add_dependencies(rwsfi2016_libs ${catkin_EXPORTED_TARGETS})
-#add_dependencies(rwsfi2016_libs rwsfi2016_msgs)
+# add_dependencies(rwsfi2016_msgs ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(rwsfi2016_libs_node src/rwsfi2016_libs_node.cpp)
+# add_executable(rwsfi2016_msgs_node src/rwsfi2016_msgs_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(rwsfi2016_libs_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(rwsfi2016_msgs_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(rwsfi2016_libs
-   ${catkin_LIBRARIES}
-)
+# target_link_libraries(rwsfi2016_msgs_node
+#   ${catkin_LIBRARIES}
+# )
 
 #############
 ## Install ##
@@ -159,7 +155,7 @@ target_link_libraries(rwsfi2016_libs
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS rwsfi2016_libs rwsfi2016_libs_node
+# install(TARGETS rwsfi2016_msgs rwsfi2016_msgs_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -184,7 +180,7 @@ target_link_libraries(rwsfi2016_libs
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_rwsfi2016_libs.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_rwsfi2016_msgs.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

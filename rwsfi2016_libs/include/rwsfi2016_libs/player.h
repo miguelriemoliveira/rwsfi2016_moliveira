@@ -17,6 +17,7 @@
 
 //my libraries includes
 #include <rwsfi2016_libs/team.h>
+#include <rwsfi2016_msgs/MakeAPlay.h>
 
 /* _________________________________
    |                                 |
@@ -54,41 +55,67 @@ namespace rwsfi2016_libs
       Player(string player_name)
       {
         name = player_name; //set the name
-        ROS_INFO("my player name is %s", name.c_str());
 
-        //Given the list of players of each "/teamRed" "/teamGreen" and "teamBlue", decide which is my_team, hunters_team and preys_team
-        vector<string> red_players, green_players, blue_players;
+        //Create the three teams
+        red_team = (shared_ptr<Team>) new Team("red");
+        green_team = (shared_ptr<Team>) new Team("green");
+        blue_team = (shared_ptr<Team>) new Team("blue");
 
-        if(!node.getParam("/teamRed", red_players) ||
-            !node.getParam("/teamGreen", green_players) ||
-            !node.getParam("/teamBlue", blue_players) )
+        //Assign pointers to my_team, preys_team and hunters_team
+        if (red_team->playerBelongsToTeam(name))
         {
-          if(find(red_players.begin(), red_players.end(), name) != red_players.end())
-          {
-            my_team = (shared_ptr<Team>) new Team("red", red_players);
-            preys_team = (shared_ptr<Team>) new Team("green", green_players);
-            hunters_team = (shared_ptr<Team>) new Team("blue", blue_players);
-          }
-          else if(find(green_players.begin(), green_players.end(), name) != green_players.end())
-          {
-            my_team = (shared_ptr<Team>) new Team("green", green_players);
-            preys_team = (shared_ptr<Team>) new Team("blue", blue_players);
-            hunters_team = (shared_ptr<Team>) new Team("red", red_players);
-          }
-          else if(find(blue_players.begin(), blue_players.end(), name) != blue_players.end())
-          {
-            my_team = (shared_ptr<Team>) new Team("blue", blue_players);
-            preys_team = (shared_ptr<Team>) new Team("red", red_players);
-            hunters_team = (shared_ptr<Team>) new Team("green", green_players);
-          }
+          my_team = red_team;
+          preys_team = green_team;
+          hunters_team = blue_team;
+        }
+        else if(green_team->playerBelongsToTeam(name))
+        {
+          my_team = green_team;
+          preys_team = blue_team;
+          hunters_team = red_team;
+        }
+        else if(blue_team->playerBelongsToTeam(name))
+        {
+          my_team = blue_team;
+          preys_team = red_team;
+          hunters_team = green_team;
+        }
+        else
+        {
+          ROS_ERROR("Player %s does not belong to any team.", name.c_str());
+          shutdown();
         }
 
+        //Print initial report
+        ROS_WARN("my player name is %s and I am on team %s", name.c_str(), my_team->name.c_str());
         my_team->printTeamInfo();
         hunters_team->printTeamInfo();
         preys_team->printTeamInfo();
 
+        //Radomize a position inside the arena and warp the player to it
+        struct timeval t1;      
+        gettimeofday(&t1, NULL);
+        srand(t1.tv_usec);
+        double X=((((double)rand()/(double)RAND_MAX) ) * 2 -1) * 5 ;
+        double Y=((((double)rand()/(double)RAND_MAX) ) * 2 -1) * 5 ;
+        warp(X,Y);
+
+        Duration(0.2).sleep(); //sleep a while to fill the tf buffer
+
+        //initialize the subscriber
+        //_sub = (boost::shared_ptr<ros::Subscriber>) new ros::Subscriber;
+        //*_sub = node.subscribe("/game_move", 1, &this::moveCallback, this);
 
       }
+
+      /**
+       * @brief 
+       * @param msg
+       */
+      //void makeAPlayCallback(const rwsfi2016_msgs::GameMove& msg)
+      //{
+
+      //}
 
 
       /**
@@ -187,12 +214,24 @@ namespace rwsfi2016_libs
         broadcaster.sendTransform(StampedTransform(t, Time::now(), "/map", name));
       }
 
+      void warp(double X, double Y)
+      {
+        Quaternion q; 
+        q.setRPY(0, 0, 0);
+
+        Transform t;
+        t.setOrigin( Vector3(X, Y, 0.0) );
+        t.setRotation(q);
+        broadcaster.sendTransform(StampedTransform(t, ros::Time::now(), "/map", name));
+      }
+
+
       /* _________________________________
          |                                 |
          |          PROPPERTIES            |
          |_________________________________| */
       /**
-       * @brief the name of the player and team
+       * @brief the name of the player
        */
       string name;
 
@@ -209,6 +248,7 @@ namespace rwsfi2016_libs
       /**
        * @brief The teams
        */
+      shared_ptr<Team> red_team, green_team, blue_team;
       shared_ptr<Team> my_team, hunters_team, preys_team;
 
 
