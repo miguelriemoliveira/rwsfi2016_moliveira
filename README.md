@@ -4,4 +4,4 @@
 
 ROS Workshop for company Follow Inspiration, December 2016
 
-Check the [wiki](https://github.com/miguelriemoliveira/rwsfi2016_moliveira/wiki).
+Check the [wiki](https://github.com/miguelriemoliveira/rwsfi2016_moliveira/wiki) for further details.
