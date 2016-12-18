@@ -1,10 +1,16 @@
-
+/* _________________________________
+   |                                 |
+   |           INCLUDES              |
+   |_________________________________| */
 #include <ros/ros.h>
-
 #include <rwsfi2016_libs/player.h>
-//#include <rws2016_msgs/GameMove.h>
 
+/* _________________________________
+   |                                 |
+   |              CODE               |
+   |_________________________________| */
 using namespace std;
+using namespace ros;
 
 
 /**
