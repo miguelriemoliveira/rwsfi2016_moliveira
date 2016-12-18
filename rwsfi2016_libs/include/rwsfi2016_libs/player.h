@@ -60,10 +60,10 @@ namespace rwsfi2016_libs ///The namespace of this lib
        * @brief The constructor
        * @param player_name the name of the player
        */
-      Player(string player_name, string pet_name = "dog")
+      Player(string player_name, string pet_name = "/dog")
       {
-        name = player_name; //set the name
-        setPetName(pet_name);//set the name of the animal
+        name = names::remap(player_name); //set the name
+        setPetName(names::remap(pet_name));//set the name of the animal
 
         //Create the three teams
         red_team = (shared_ptr<Team>) new Team("red");
@@ -112,7 +112,7 @@ namespace rwsfi2016_libs ///The namespace of this lib
         Duration(0.2).sleep(); //sleep a while to fill the tf buffer
 
         //initialize the subscriber
-        string make_a_play_topic = "/make_a_play/" + pet;
+        string make_a_play_topic = "/make_a_play" + pet;
         subscriber = (boost::shared_ptr<ros::Subscriber>) new ros::Subscriber;
         *subscriber = node.subscribe(make_a_play_topic, 1, &Player::makeAPlayCallback, this);
 
@@ -147,7 +147,8 @@ namespace rwsfi2016_libs ///The namespace of this lib
       double getDistanceToPlayer(string other_player, double time_to_wait=DEFAULT_TIME)
       {
         StampedTransform t; //The transform object
-        Time now = Time::now(); //get the time
+        //Time now = Time::now(); //get the time
+        Time now = Time(0); //get the latest transform received
 
         try //get the transformation between both players
         {
@@ -171,7 +172,8 @@ namespace rwsfi2016_libs ///The namespace of this lib
       double getAngleToPLayer(string other_player, double time_to_wait=DEFAULT_TIME)
       {
         StampedTransform t; //The transform object
-        Time now = Time::now(); //get the time
+        //Time now = Time::now(); //get the time
+        Time now = Time(0); //get the latest transform received
 
         try{
           listener.waitForTransform(name, other_player, now, Duration(time_to_wait));
@@ -193,7 +195,8 @@ namespace rwsfi2016_libs ///The namespace of this lib
       StampedTransform getPose(double time_to_wait=DEFAULT_TIME)
       {
         StampedTransform t; //The transform object
-        Time now = Time::now(); //get the time
+        //Time now = Time::now(); //get the time
+        Time now = Time(0); //get the latest transform received
 
         try{
           listener.waitForTransform("/map", name, now, Duration(time_to_wait));
@@ -215,8 +218,14 @@ namespace rwsfi2016_libs ///The namespace of this lib
       {
         if (displacement > last_max_displacement_received)
         {
-          ROS_ERROR("%s, you cannot move more than %0.1f and you asked to move %0.1f. Are you trying to cheat? As a penalty, this time you will not move!", name.c_str(), last_max_displacement_received, displacement);
+          ROS_ERROR("%s, you cannot move more than %0.2f and you asked to move %0.2f. Are you trying to cheat? As a penalty, this time you will not move!", name.c_str(), last_max_displacement_received, displacement);
           displacement = 0;
+        }
+
+        if (isnan(turn_angle))
+        {
+          ROS_ERROR("%s, angle given is nan. Using 0 instead", name.c_str());
+          turn_angle = 0;
         }
 
         //Put arguments withing authorized boundaries
@@ -255,14 +264,14 @@ namespace rwsfi2016_libs ///The namespace of this lib
 
       void setPetName(string pet_name)
       {
-        if (pet_name == "cheetah" || pet_name == "dog" ||pet_name == "cat" ||pet_name == "turtle")
+        if (pet_name == "/cheetah" || pet_name == "/dog" ||pet_name == "/cat" ||pet_name == "/turtle")
         {
           pet = pet_name; 
         }
         else 
         {
-          ROS_ERROR("The pet you have selected does not exist. You must choose: cheetah dog cat or turtle");
-            shutdown();
+          ROS_ERROR("%s does not exist. You must choose a pet from: cheetah, dog, cat or turtle", pet_name.c_str());
+          shutdown();
         }
       }
 

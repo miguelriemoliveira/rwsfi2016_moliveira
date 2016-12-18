@@ -25,16 +25,15 @@ class MyPlayer: public rwsfi2016_libs::Player
      * @param name player name
      * @param pet_name pet name
      */
-    MyPlayer(string player_name, string pet_name="dog"): Player(player_name, pet_name){};
+    MyPlayer(string player_name, string pet_name="/dog"): Player(player_name, pet_name){};
 
     void play(const rwsfi2016_msgs::MakeAPlay& msg)
     {
-      ROS_WARN("Custom play behaviour. Now I will win the game");
+      //Custom play behaviour. Now I will win the game
 
-      move(1, M_PI/30);
+      
+      move(msg.max_displacement, getAngleToPLayer(preys_team->players[0]));
     }
-
-
 };
 
 
@@ -49,12 +48,8 @@ int main(int argc, char** argv)
   // ------------------------
   //Replace this with your name
   // ------------------------
-  string my_name = "moliveira";
-
-  // ------------------------
-  //Replace this with your pet
-  // ------------------------
-  string my_pet = "turtle";
+  string my_name = "/moliveira";
+  string my_pet = "/turtle";
 
   //initialize ROS stuff
   ros::init(argc, argv, my_name);

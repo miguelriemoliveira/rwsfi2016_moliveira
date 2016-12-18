@@ -1,0 +1,13 @@
+red: ["/dummyred"]
+green: ["/dummygreen"]
+blue: ["/moliveira"]
+
+hunting_distance: 0.5
+game_duration: 120
+positive_score: 1
+negative_score: 1
+
+
+
+
+
