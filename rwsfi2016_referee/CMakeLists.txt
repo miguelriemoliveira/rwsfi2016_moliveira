@@ -9,11 +9,16 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   rwsfi2016_msgs
+  pcl_ros
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+find_package(PCL 1.2 REQUIRED)
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -131,6 +136,7 @@ include_directories(
 ## Declare a C++ executable
 # add_executable(rwsfi2016_referee_node src/rwsfi2016_referee_node.cpp)
 add_executable(draw_teams src/draw_teams.cpp)
+add_executable(pcd2pointcloud src/pcd2pointcloud.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -141,6 +147,10 @@ add_executable(draw_teams src/draw_teams.cpp)
 #   ${catkin_LIBRARIES}
 # )
 target_link_libraries(draw_teams
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(pcd2pointcloud
   ${catkin_LIBRARIES}
 )
 
