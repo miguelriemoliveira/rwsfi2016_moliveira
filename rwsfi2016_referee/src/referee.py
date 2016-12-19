@@ -10,6 +10,9 @@ import tf
 import math
 import os
 
+import rospkg
+from sensor_msgs.msg import Image, PointCloud2, PointField
+
 score = [0,0,0]
 pub_cheetah = rospy.Publisher('make_a_play/cheetah', MakeAPlay, queue_size=0)
 pub_dog = rospy.Publisher('make_a_play/dog', MakeAPlay, queue_size=0)

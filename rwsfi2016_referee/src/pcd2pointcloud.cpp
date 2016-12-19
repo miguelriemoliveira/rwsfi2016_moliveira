@@ -39,6 +39,13 @@ int main (int argc, char** argv)
         exit(1);
     }
 
+    //Scale up the point cloud
+    for (size_t i=0; i < cloud->points.size(); ++i)
+    {
+    
+    
+    }
+
     sensor_msgs::PointCloud2 msg;
     pcl::toROSMsg (*cloud, msg);
     msg.header.frame_id = ros::names::remap("/map");
