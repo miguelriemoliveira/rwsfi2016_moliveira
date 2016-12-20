@@ -42,7 +42,7 @@ int main (int argc, char** argv)
     //Scale up the point cloud
     for (size_t i=0; i < cloud->points.size(); ++i)
     {
-    
+        cloud->points[i].x 
     
     }
 

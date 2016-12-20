@@ -24,7 +24,7 @@
    |              CODE               |
    |_________________________________| */
 
-#define DEFAULT_TIME 0.1 /*Default time to wait for a transform is 0.1 secs*/
+#define DEFAULT_TIME 0.3 /*Default time to wait for a transform is 0.1 secs*/
 
 using namespace std;
 using namespace ros;
@@ -109,7 +109,7 @@ namespace rwsfi2016_libs ///The namespace of this lib
         double Y=((((double)rand()/(double)RAND_MAX) ) * 2 -1) * 5 ;
         warp(X,Y);
 
-        Duration(0.2).sleep(); //sleep a while to fill the tf buffer
+        Duration(0.4).sleep(); //sleep a while to fill the tf buffer
 
         //initialize the subscriber
         string make_a_play_topic = "/make_a_play" + pet;

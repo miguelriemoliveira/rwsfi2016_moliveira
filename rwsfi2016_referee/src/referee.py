@@ -28,12 +28,43 @@ rate = 0
 game_duration = rospy.get_param('/game_duration')
 positive_score = rospy.get_param('/positive_score')
 negative_score = rospy.get_param('/negative_score')
-killed = [];
+killed = []
+teamA = []
+teamB = []
+teamC = []
+
 
 
 def timerCallback(event):
 
     a = MakeAPlay()
+
+    global teamA, teamB, teamC
+    global killed
+    print("killed: " + str(killed))
+
+    if len(killed)==0:
+        players_killed = []
+    else:
+        players_killed = [i[0] for i in killed]
+
+    for player in teamA:
+        if player in players_killed:
+            a.red_dead.append(player)
+        else:
+            a.red_alive.append(player)
+
+    for player in teamB:
+        if player in players_killed:
+            a.green_dead.append(player)
+        else:
+            a.green_alive.append(player)
+
+    for player in teamC:
+        if player in players_killed:
+            a.blue_dead.append(player)
+        else:
+            a.blue_alive.append(player)
 
     #cheetah
     a.max_displacement = random.random()/10
@@ -96,13 +127,17 @@ def gameEndCallback(event):
 def talker():
     rospy.init_node('referee', anonymous=True)
     listener = tf.TransformListener()
+    broadcaster = tf.TransformBroadcaster()
     global rate 
     rate = rospy.Rate(2) # 10hz
     rate.sleep()
 
     hunting_distance = rospy.get_param('/hunting_distance')
+    global teamA
     teamA = rospy.get_param('/red')
+    global teamB
     teamB = rospy.get_param('/green')
+    global teamC
     teamC = rospy.get_param('/blue')
 
     rospy.Timer(rospy.Duration(0.1), timerCallback, oneshot=False)
@@ -119,6 +154,7 @@ def talker():
             if d.to_sec() > 10:
                 rospy.logwarn("Ressuscitating %s", i[0])
                 killed.remove(i)
+                broadcaster.sendTransform((random.random()*10 -5, random.random()*10 -5, 0), tf.transformations.quaternion_from_euler(0, 0, 0), tic, i[0], "/map")
 
 
 
@@ -199,18 +235,25 @@ def talker():
                 score[1] = score[1] + negative_score
                 s = String()
                 s.data = tbk
-                pub_killer.publish(s)
+                #pub_killer.publish(s)
                 mk1 = Marker()
-                mk1.header.frame_id = tbk
+                mk1.header.frame_id = "/map"
+                (trans,rot) = listener.lookupTransform("/map", tbk, rospy.Time(0))
+                mk1.pose.position.x = trans[0]
+                mk1.pose.position.y = trans[1]
                 mk1.type = mk1.TEXT_VIEW_FACING
                 mk1.action = mk1.ADD
                 mk1.id = 0;
                 mk1.ns = tbk
-                mk1.scale.z = 0.7
+                mk1.scale.z = 0.4
                 mk1.color.a = 1.0
-                mk1.text = "RIP " + tbk
+                mk1.text = tbk
                 mk1.lifetime = rospy.Duration.from_sec(5)
+                mk1.frame_locked = 0
                 ma_killed.markers.append(mk1)
+
+                broadcaster.sendTransform((-100, -100, 0), tf.transformations.quaternion_from_euler(0, 0, 0), kill_time, tbk, "/map")
+
 
             else:
                 t=1
@@ -233,18 +276,24 @@ def talker():
                 score[2] = score[2] + negative_score
                 s = String()
                 s.data = tbk
-                pub_killer.publish(s)
+                #pub_killer.publish(s)
+
                 mk1 = Marker()
-                mk1.header.frame_id = tbk
+                mk1.header.frame_id = "/map"
+                (trans,rot) = listener.lookupTransform("/map", tbk, rospy.Time(0))
+                mk1.pose.position.x = trans[0]
+                mk1.pose.position.y = trans[1]
                 mk1.type = mk1.TEXT_VIEW_FACING
                 mk1.action = mk1.ADD
                 mk1.id = 0;
                 mk1.ns = tbk
-                mk1.scale.z = 0.7
+                mk1.scale.z = 0.4
                 mk1.color.a = 1.0
-                mk1.text = "RIP " + tbk
+                mk1.text = tbk
                 mk1.lifetime = rospy.Duration.from_sec(5)
+                mk1.frame_locked = 0
                 ma_killed.markers.append(mk1)
+                broadcaster.sendTransform((100, -100, 0), tf.transformations.quaternion_from_euler(0, 0, 0), kill_time, tbk, "/map")
 
             else:
                 t=1
@@ -267,18 +316,25 @@ def talker():
                 score[0] = score[0] + negative_score
                 s = String()
                 s.data = tbk
-                pub_killer.publish(s)
+                #pub_killer.publish(s)
+
+
                 mk1 = Marker()
-                mk1.header.frame_id = tbk
+                mk1.header.frame_id = "/map"
+                (trans,rot) = listener.lookupTransform("/map", tbk, rospy.Time(0))
+                mk1.pose.position.x = trans[0]
+                mk1.pose.position.y = trans[1]
                 mk1.type = mk1.TEXT_VIEW_FACING
                 mk1.action = mk1.ADD
                 mk1.id = 0;
                 mk1.ns = tbk
-                mk1.scale.z = 0.7
+                mk1.scale.z = 0.4
                 mk1.color.a = 1.0
-                mk1.text = "RIP " + tbk
+                mk1.text = tbk
                 mk1.lifetime = rospy.Duration.from_sec(5)
+                mk1.frame_locked = 0
                 ma_killed.markers.append(mk1)
+                broadcaster.sendTransform((100, 100, 0), tf.transformations.quaternion_from_euler(0, 0, 0), kill_time, tbk, "/map")
 
             else:
                 t=1
