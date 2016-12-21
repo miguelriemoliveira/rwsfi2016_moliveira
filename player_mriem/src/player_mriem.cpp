@@ -6,6 +6,7 @@
 #include <std_msgs/String.h>
 #include <visualization_msgs/Marker.h>
 #include <rwsfi2016_libs/player.h>
+#include <rwsfi2016_msgs/GameQuery.h>
 
 /* _________________________________
    |                                 |
@@ -24,6 +25,7 @@ class MyPlayer: public rwsfi2016_libs::Player
 
         ros::Publisher publisher;
         visualization_msgs::Marker bocas_msg;
+        ros::ServiceServer service;
 
         /**
          * @brief Constructor, nothing to be done here
@@ -44,7 +46,21 @@ class MyPlayer: public rwsfi2016_libs::Player
             bocas_msg.color.r = 0.0;
             bocas_msg.color.g = 0.0;
             bocas_msg.color.b = 0.0;
+
+            //Create the service
+            //service = node.advertiseService("game_query", queryCallback);
+
+            service = node.advertiseService(name + "/game_query", &MyPlayer::queryCallback, this);
         };
+
+
+        bool queryCallback(rwsfi2016_msgs::GameQuery::Request &req, rwsfi2016_msgs::GameQuery::Response &res)
+        {
+            ROS_INFO("%s: game_query called", name.c_str());
+            res.resposta = "hello";
+
+            return true;
+        }
 
         void play(const rwsfi2016_msgs::MakeAPlay& msg)
         {
@@ -92,7 +108,7 @@ class MyPlayer: public rwsfi2016_libs::Player
             {
                 string arena = "/map";
                 move(msg.max_displacement, getAngleToPLayer(arena));
-                bocas_msg.text = "a ir para o centro";
+
             }
             else{
 
@@ -147,7 +163,7 @@ int main(int argc, char** argv)
     //Replace this with your name
     // ------------------------
     string my_name = "mriem";
-    string my_pet = "/cheetah";
+    string my_pet = "/cat";
 
     //initialize ROS stuff
     ros::init(argc, argv, my_name);
