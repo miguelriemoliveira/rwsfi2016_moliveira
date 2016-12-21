@@ -7,7 +7,6 @@ Panels:
         - /Global Options1
         - /Status1
         - /Grid1
-        - /Bocas1
       Splitter Ratio: 0.5
     Tree Height: 386
   - Class: rviz/Selection
@@ -180,7 +179,7 @@ Visualization Manager:
         Value: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Scale: 29.1849575
+      Scale: 39.8482132
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
       X: 0.638323903

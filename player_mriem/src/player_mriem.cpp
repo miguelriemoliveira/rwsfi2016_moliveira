@@ -50,21 +50,84 @@ class MyPlayer: public rwsfi2016_libs::Player
         {
             //Custom play behaviour. Now I will win the game
             bocas_msg.header.stamp = ros::Time();
-        
-            double distance_to_arena = getDistanceToArena();
-            ROS_INFO("distance_to_arena = %f", distance_to_arena);
 
+
+            //Custom play behaviour. Now I will win the game
+            double dist_min1=999, dist_min2=999, dist_hmin=999;
+            int i_min1 = 0, i_min2 = 0, h_min = 0;
+
+            for(int i = 0; i < msg.red_alive.size(); i++){
+                double dist = getDistanceToPlayer(msg.red_alive[i]);
+                if(dist == dist){
+                    if(dist <= dist_min1){
+                        double aux = dist_min1;
+                        dist_min1 = dist;
+                        dist_min2 = aux;
+                        i_min1 = i;
+                        i_min2 = i_min1;
+                    }
+                }
+            }
+
+            int i_min;
+            if(getAngleToPLayer(msg.red_alive[i_min2]) < getAngleToPLayer(msg.red_alive[i_min1]))
+                i_min = i_min2;
+            else
+                i_min = i_min1;
+
+
+            for(int i=0; i< msg.green_alive.size(); i++){
+                double dist_h = getDistanceToPlayer(msg.green_alive[i]);
+                if(dist_h == dist_h){
+                    if(dist_h <= dist_hmin){
+                        dist_hmin = dist_h;
+                        h_min = i;
+                    }
+                }
+            }
+
+            double angleMove;
+            double distance_to_arena = getDistanceToArena();
             if (distance_to_arena > 6) //behaviour move to the center of arena
             {
                 string arena = "/map";
                 move(msg.max_displacement, getAngleToPLayer(arena));
-                bocas_msg.text = "ir para o centro";
+                bocas_msg.text = "a ir para o centro";
             }
-            else //behaviour follow closets prey
-            {
-                move(msg.max_displacement, getAngleToPLayer(preys_team->players[0]));
-                bocas_msg.text = "atras de " + preys_team->players[0];
+            else{
+
+
+                //Behaviour follow the closest prey
+                if(dist_hmin <= dist_min1){
+                    angleMove = - getAngleToPLayer(msg.green_alive[h_min]);
+                    move(msg.max_displacement, angleMove);
+                    bocas_msg.text = "tas tramado comigo";
+                }
+                else{
+                    angleMove = getAngleToPLayer(msg.red_alive[i_min]);
+                    move(msg.max_displacement, angleMove);
+                    bocas_msg.text = "e melhor fugir";
+                }
             }
+
+            //move(msg.max_displacement, M_PI);
+
+
+
+            //double distance_to_arena = getDistanceToArena();
+            //ROS_INFO("distance_to_arena = %f", distance_to_arena);
+
+            //if (distance_to_arena > 6) //behaviour move to the center of arena
+            //{
+            //string arena = "/map";
+            //move(msg.max_displacement, getAngleToPLayer(arena));
+            //bocas_msg.text = "ir para o centro";
+            //}
+            //else //behaviour follow closets prey
+            //{
+            //move(msg.max_displacement, getAngleToPLayer(preys_team->players[0]));
+            //bocas_msg.text = "atras de " + preys_team->players[0];
+            //}
 
 
             publisher.publish(bocas_msg);
