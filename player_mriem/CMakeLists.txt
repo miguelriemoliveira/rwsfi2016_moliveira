@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(rwsfi2016_referee)
+project(player_mriem)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -8,17 +8,12 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  rwsfi2016_msgs
-  pcl_ros
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
-find_package(PCL 1.2 REQUIRED)
-include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -107,8 +102,8 @@ add_definitions(${PCL_DEFINITIONS})
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES rwsfi2016_referee
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+#  LIBRARIES player_mriem
+#  CATKIN_DEPENDS roscpp rospy std_msgs tf
 #  DEPENDS system_lib
 )
 
@@ -124,35 +119,27 @@ include_directories(
 )
 
 ## Declare a C++ library
-# add_library(rwsfi2016_referee
-#   src/${PROJECT_NAME}/rwsfi2016_referee.cpp
+# add_library(player_mriem
+#   src/${PROJECT_NAME}/player_mriem.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(rwsfi2016_referee ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(player_mriem ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(rwsfi2016_referee_node src/rwsfi2016_referee_node.cpp)
-add_executable(draw_teams src/draw_teams.cpp)
-#add_executable(pcd2pointcloud src/pcd2pointcloud.cpp)
+# add_executable(player_mriem_node src/player_mriem_node.cpp)
+add_executable(player_mriem src/player_mriem.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(rwsfi2016_referee_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(player_mriem_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(rwsfi2016_referee_node
-#   ${catkin_LIBRARIES}
-# )
-target_link_libraries(draw_teams
+target_link_libraries(player_mriem
   ${catkin_LIBRARIES}
 )
-
-#target_link_libraries(pcd2pointcloud
-  #${catkin_LIBRARIES}
-#)
 
 #############
 ## Install ##
@@ -169,7 +156,7 @@ target_link_libraries(draw_teams
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS rwsfi2016_referee rwsfi2016_referee_node
+# install(TARGETS player_mriem player_mriem_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -194,7 +181,7 @@ target_link_libraries(draw_teams
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_rwsfi2016_referee.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_player_mriem.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
