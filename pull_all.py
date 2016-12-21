@@ -33,7 +33,7 @@ __status__ = "Development"
 #########################
 
 #Taken from https://github.com/miguelriemoliveira/rws2016_moliveira/wiki/List-of-players-and-teams
-urls = ["https://github.com/miguelriemoliveira/rwsfi2016_moliveira.git"]
+urls = ["https://github.com/miguelriemoliveira/rwsfi2016_moliveira.git","https://github.com/metropt/rwsfi2016_jxavier.git","https://github.com/mcamarneiro/rwsfi2016_mcamarneiro.git","https://github.com/jamessteve/rwsfi2016_testeves.git","https://github.com/joaoleao15/rwsfi2016_jleao.git","https://github.com/JoanaS/rwsfi2016_jsantos.git", "https://github.com/maria-miranda/rwsfi2016_mmiranda.git","https://github.com/danielfbcampos/rwsfi2016_dcampos.git","https://github.com/InesDominguesFI/rwsfi2016_idomingues.git"]
 
 #Can be changed with command line argument clone, i.e., ./pull_all.py clone
 clone_mode = False
