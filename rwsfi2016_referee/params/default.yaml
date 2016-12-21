@@ -1,6 +1,6 @@
-red: ["/dummyred"]
-green: ["/dummygreen"]
-blue: ["/moliveira"]
+red: ["mcamarneiro","jxavier","idomingues"]
+green: ["testeves","jleao","jsantos"]
+blue: ["mriem","dcampos","mmiranda"]
 
 hunting_distance: 0.5
 game_duration: 120
