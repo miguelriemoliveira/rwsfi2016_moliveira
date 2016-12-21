@@ -67,7 +67,6 @@ class MyPlayer: public rwsfi2016_libs::Player
             //Custom play behaviour. Now I will win the game
             bocas_msg.header.stamp = ros::Time();
 
-
             //Custom play behaviour. Now I will win the game
             double dist_min1=999, dist_min2=999, dist_hmin=999;
             int i_min1 = 0, i_min2 = 0, h_min = 0;
@@ -104,25 +103,25 @@ class MyPlayer: public rwsfi2016_libs::Player
 
             double angleMove;
             double distance_to_arena = getDistanceToArena();
-            if (distance_to_arena > 6) //behaviour move to the center of arena
+            if (distance_to_arena > 7.7) //behaviour move to the center of arena
             {
-                string arena = "/map";
+                string arena = "/dcampos";
+
+                
                 move(msg.max_displacement, getAngleToPLayer(arena));
 
             }
             else{
-
-
                 //Behaviour follow the closest prey
                 if(dist_hmin <= dist_min1){
                     angleMove = - getAngleToPLayer(msg.green_alive[h_min]);
                     move(msg.max_displacement, angleMove);
-                    bocas_msg.text = "tas tramado comigo";
+                    bocas_msg.text = "ninguem mapanha!";
                 }
                 else{
                     angleMove = getAngleToPLayer(msg.red_alive[i_min]);
                     move(msg.max_displacement, angleMove);
-                    bocas_msg.text = "e melhor fugir";
+                    bocas_msg.text = "Para que fugir?";
                 }
             }
 
