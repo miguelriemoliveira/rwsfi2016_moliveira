@@ -32,8 +32,8 @@ class MyPlayer: public rwsfi2016_libs::Player
       //Custom play behaviour. Now I will win the game
 
       //Behaviour follow the closest prey
-      //move(msg.max_displacement, getAngleToPLayer(preys_team->players[0]));
-      move(msg.max_displacement, M_PI/30);
+      move(msg.max_displacement, getAngleToPLayer(preys_team->players[0]));
+      //move(msg.max_displacement, M_PI/30);
     }
 };
 

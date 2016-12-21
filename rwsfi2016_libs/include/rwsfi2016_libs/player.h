@@ -24,7 +24,7 @@
    |              CODE               |
    |_________________________________| */
 
-#define DEFAULT_TIME 0.3 /*Default time to wait for a transform is 0.1 secs*/
+#define DEFAULT_TIME 0.05 /*Default time to wait for a transform is 0.1 secs*/
 
 using namespace std;
 using namespace ros;
@@ -108,8 +108,8 @@ namespace rwsfi2016_libs ///The namespace of this lib
         double X=((((double)rand()/(double)RAND_MAX) ) * 2 -1) * 5 ;
         double Y=((((double)rand()/(double)RAND_MAX) ) * 2 -1) * 5 ;
         warp(X,Y);
-
-        Duration(0.4).sleep(); //sleep a while to fill the tf buffer
+        Duration(0.1).sleep(); //sleep a while to fill the tf buffer
+        warp(X,Y);
 
         //initialize the subscriber
         string make_a_play_topic = "/make_a_play" + pet;
@@ -152,7 +152,7 @@ namespace rwsfi2016_libs ///The namespace of this lib
 
         try //get the transformation between both players
         {
-          listener.waitForTransform(name, other_player, now, Duration(2.0));
+          listener.waitForTransform(name, other_player, now, Duration(time_to_wait));
           listener.lookupTransform(name, other_player, now, t);
         }
         catch (TransformException& ex){
@@ -218,13 +218,13 @@ namespace rwsfi2016_libs ///The namespace of this lib
       {
         if (displacement > last_max_displacement_received)
         {
-          ROS_ERROR("%s, you cannot move more than %0.2f and you asked to move %0.2f. Are you trying to cheat? As a penalty, this time you will not move!", name.c_str(), last_max_displacement_received, displacement);
+          ROS_WARN("%s, you cannot move more than %0.2f and you asked to move %0.2f. Are you trying to cheat? As a penalty, this time you will not move!", name.c_str(), last_max_displacement_received, displacement);
           displacement = 0;
         }
 
         if (isnan(turn_angle))
         {
-          ROS_ERROR("%s, angle given is nan. Using 0 instead", name.c_str());
+          ROS_WARN("%s, angle given is nan. Using 0 instead", name.c_str());
           turn_angle = 0;
         }
 
