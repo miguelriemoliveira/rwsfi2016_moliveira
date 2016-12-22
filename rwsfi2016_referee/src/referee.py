@@ -9,6 +9,7 @@ import random
 import tf
 import math
 import os
+import subprocess
 
 import rospkg
 from sensor_msgs.msg import Image, PointCloud2, PointField
@@ -33,10 +34,14 @@ teamA = []
 teamB = []
 teamC = []
 
+pause_game = 0
+
 def queryCallback(event):
 
     #get a complete list of alive players
     print("This is a query callback")
+    global pause_game
+    pause_game = 1
 
     a = MakeAPlay()
     global teamA, teamB, teamC
@@ -72,10 +77,39 @@ def queryCallback(event):
     desgracado = random.choice(players)
     print("choose " + str(desgracado) + " as desgracado")
 
+
+    #publish the point cloud and wait a bit
+    objects = ["banana", "tomato", "onion", "soda_can"]
+    chosen_object = random.choice(objects)
+
+
+    # get an instance of RosPack with the default search paths
+    rospack = rospkg.RosPack()
+    # list all packages, equivalent to rospack list
+    #rospack.list_pkgs() 
+    # get the file path for rospy_tutorials
+    path_pcds = rospack.get_path('rwsfi2016_referee') + "/../pcd/"
+
+    cmd = "rosrun rwsfi2016_referee pcd2pointcloud _input:=" + path_pcds + chosen_object + ".pcd _output:=/object_point_cloud /map:=/" + desgracado + " _one_shot:=1"
+    print "Executing command: " + cmd
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    for line in p.stdout.readlines():
+        print line,
+        p.wait()
+
     #write here the service call for the /desgracado/game_query
     #... to be continued tomorrow ...
 
+
+    
+    #game can be resumed
+    pause_game = 0
+
+
 def timerCallback(event):
+
+    if pause_game:
+        return
 
     a = MakeAPlay()
 
@@ -184,7 +218,7 @@ def talker():
     rospy.Timer(rospy.Duration(game_duration), gameEndCallback, oneshot=True)
 
     #A query every 5 seconds
-    rospy.Timer(rospy.Duration(1), queryCallback, oneshot=False)
+    rospy.Timer(rospy.Duration(5), queryCallback, oneshot=False)
     game_start = rospy.get_time()
 
     while not rospy.is_shutdown():
