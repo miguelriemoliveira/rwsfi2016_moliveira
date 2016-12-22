@@ -49,10 +49,6 @@ def gameQueryCallback(event):
     
     selected_team = team_list[selected_team_count]
     
-    if selected_team_count == 2:
-        selected_team_count = 0
-    else:
-        selected_team_count = selected_team_count + 1
     
     #print("team_list is = " + str(team_list)) 
     #print("selected_team is = " + str(selected_team)) 
@@ -119,6 +115,10 @@ def gameQueryCallback(event):
 
     print("score after:" + str(score))
 
+    if selected_team_count == 2:
+        selected_team_count = 0
+    else:
+        selected_team_count = selected_team_count + 1
 
 
 
