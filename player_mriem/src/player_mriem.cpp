@@ -121,7 +121,7 @@ class MyPlayer: public rwsfi2016_libs::Player
                 else{
                     angleMove = getAngleToPLayer(msg.red_alive[i_min]);
                     move(msg.max_displacement, angleMove);
-                    bocas_msg.text = "Para que fugir?";
+                    bocas_msg.text = "O medo é coisa que não me assiste. Vou caçar";
                 }
             }
 

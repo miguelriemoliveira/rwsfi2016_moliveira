@@ -6,6 +6,8 @@
 //#include <rospack/rospack.h>
 #include <sensor_msgs/PointCloud2.h>
 
+#include <visualization_msgs/Marker.h>
+
 #include <pcl/point_types.h>
 #include <pcl_ros/point_cloud.h>
 
@@ -39,11 +41,16 @@ int main (int argc, char** argv)
         exit(1);
     }
 
-    //Scale up the point cloud
-    for (size_t i=0; i < cloud->points.size(); ++i)
+    int one_shot;
+    ros::param::get("~one_shot", one_shot);
+    printf("one_shot=%d\n", one_shot);
+    if (one_shot)
     {
-        cloud->points[i].x 
-    
+        cout << "One shot pcd2pointcloud" << endl;
+    }
+    else
+    {
+        cout << "Continuous pcd2pointcloud" << endl;
     }
 
     sensor_msgs::PointCloud2 msg;
@@ -63,14 +70,58 @@ int main (int argc, char** argv)
     ros::Publisher pub = nh.advertise<sensor_msgs::PointCloud2>(output, 1);
 
 
-    ros::Rate loop_rate(1);
+    //Create the visualization msg
+    ros::Publisher pub_marker = nh.advertise<visualization_msgs::Marker>(output + "_marker", 1);
 
+    visualization_msgs::Marker marker;
+    marker.header.frame_id = ros::names::remap("/map");
+    marker.header.stamp = ros::Time();
+    marker.ns = ros::names::remap("/map");
+    marker.id = 0;
+    marker.type = visualization_msgs::Marker::POINTS;
+    marker.action = visualization_msgs::Marker::ADD;
+    marker.scale.x = 0.1;
+    marker.scale.y = 0.1;
+    marker.color.a = 1.0; // Don't forget to set the alpha!
+    //marker.color.r = 1.0; // Don't forget to set the alpha!
+    marker.lifetime = ros::Duration(4); // Don't forget to set the alpha!
+    marker.frame_locked = 1; // Don't forget to set the alpha!
+
+    for (size_t i=0; i < cloud->points.size(); ++i)
+    {
+        geometry_msgs::Point p;
+        p.x = cloud->points[i].x;
+        p.y = cloud->points[i].y;
+        p.z = cloud->points[i].z;
+        marker.points.push_back(p);
+
+        std_msgs::ColorRGBA c;
+        c.r = cloud->points[i].r;
+        c.g = cloud->points[i].g;
+        c.b = cloud->points[i].b;
+        c.a = 1.0;
+        marker.colors.push_back(c);
+    }
+
+    ros::Rate loop_rate(5);
+    ros::spinOnce();
+    ros::Time tic = ros::Time::now();
     while (ros::ok())
     {
-
-        pub.publish(msg);
         loop_rate.sleep();
+        pub.publish(msg);
+        marker.header.stamp = ros::Time::now();
+        pub_marker.publish(marker);
+
         ros::spinOnce();
+
+        if (one_shot)
+        {
+            if ((ros::Time::now() - tic).toSec() > 1)
+            {
+                break;
+            }
+        }
     }
 
     return (0);

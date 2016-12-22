@@ -33,7 +33,47 @@ teamA = []
 teamB = []
 teamC = []
 
+def queryCallback(event):
 
+    #get a complete list of alive players
+    print("This is a query callback")
+
+    a = MakeAPlay()
+    global teamA, teamB, teamC
+    global killed
+    print("killed: " + str(killed))
+
+    if len(killed)==0:
+        players_killed = []
+    else:
+        players_killed = [i[0] for i in killed]
+
+    for player in teamA:
+        if player in players_killed:
+            a.red_dead.append(player)
+        else:
+            a.red_alive.append(player)
+
+    for player in teamB:
+        if player in players_killed:
+            a.green_dead.append(player)
+        else:
+            a.green_alive.append(player)
+
+    for player in teamC:
+        if player in players_killed:
+            a.blue_dead.append(player)
+        else:
+            a.blue_alive.append(player)
+
+    players = a.red_alive + a.green_alive + a.blue_alive
+    print("list of players alive = " + str(players))
+
+    desgracado = random.choice(players)
+    print("choose " + str(desgracado) + " as desgracado")
+
+    #write here the service call for the /desgracado/game_query
+    #... to be continued tomorrow ...
 
 def timerCallback(event):
 
@@ -142,6 +182,9 @@ def talker():
 
     rospy.Timer(rospy.Duration(0.1), timerCallback, oneshot=False)
     rospy.Timer(rospy.Duration(game_duration), gameEndCallback, oneshot=True)
+
+    #A query every 5 seconds
+    rospy.Timer(rospy.Duration(1), queryCallback, oneshot=False)
     game_start = rospy.get_time()
 
     while not rospy.is_shutdown():
@@ -155,7 +198,6 @@ def talker():
                 rospy.logwarn("Ressuscitating %s", i[0])
                 killed.remove(i)
                 broadcaster.sendTransform((random.random()*10 -5, random.random()*10 -5, 0), tf.transformations.quaternion_from_euler(0, 0, 0), tic, i[0], "/map")
-
 
 
         print killed

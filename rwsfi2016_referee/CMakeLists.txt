@@ -136,7 +136,7 @@ include_directories(
 ## Declare a C++ executable
 # add_executable(rwsfi2016_referee_node src/rwsfi2016_referee_node.cpp)
 add_executable(draw_teams src/draw_teams.cpp)
-#add_executable(pcd2pointcloud src/pcd2pointcloud.cpp)
+add_executable(pcd2pointcloud src/pcd2pointcloud.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -150,9 +150,9 @@ target_link_libraries(draw_teams
   ${catkin_LIBRARIES}
 )
 
-#target_link_libraries(pcd2pointcloud
-  #${catkin_LIBRARIES}
-#)
+target_link_libraries(pcd2pointcloud
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##

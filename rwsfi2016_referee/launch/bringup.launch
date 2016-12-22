@@ -7,7 +7,7 @@
   <!--Launch the referee-->
   <node pkg="rwsfi2016_referee" type="referee.py" name="referee"/>
   <!--Launch the killer-->
-  <node pkg="rwsfi2016_referee" type="killer.py" name="killer"/>
+  <!--<node pkg="rwsfi2016_referee" type="killer.py" name="killer"/>-->
   <!--Launch the visualization-->
   <node pkg="rviz" type="rviz" name="rviz" args="--display-config $(find rwsfi2016_referee)/config/rviz.rviz" required="true"/>
   <node pkg="rwsfi2016_referee" type="draw_teams" name="draw_teams"/>
@@ -33,8 +33,7 @@
   <!--<remap from="moliveira" to="dummygreen"/>-->
   <!--<remap from="turtle" to="cheetah"/>-->
   <!--</node>-->
-
-<!--To record all the data for the game-->
-<node name="rosbag_record" pkg="rosbag" type="record" output="screen" args=" -a -o /tmp/rwsfi2016">
+  <!--To record all the data for the game-->
+  <node name="rosbag_record" pkg="rosbag" type="record" output="screen" args=" -a -o /tmp/rwsfi2016">
 </node>
 </launch>
