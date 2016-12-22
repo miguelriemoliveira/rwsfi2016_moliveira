@@ -38,7 +38,7 @@ selected_team_count = 0
 game_pause = False
 
 def gameQueryCallback(event):
-    global teamA, teamB, teamC, selected_team_count, game_pause
+    global teamA, teamB, teamC, selected_team_count, game_pause, score
     game_pause = True 
 
     print("\n\ngameQueryCallback\n\n") 
@@ -54,13 +54,14 @@ def gameQueryCallback(event):
     else:
         selected_team_count = selected_team_count + 1
     
-    print("team_list is = " + str(team_list)) 
-    print("selected_team is = " + str(selected_team)) 
+    #print("team_list is = " + str(team_list)) 
+    #print("selected_team is = " + str(selected_team)) 
 
     # sortear um jogador alive da equipa desta iteracao
 
     selected_player = random.choice(selected_team)
-    print("selected_player is = " + str(selected_player)) 
+    #selected_player = "idomingues"
+    #print("selected_player is = " + str(selected_player)) 
 
     # sortear um objeto
     objects = ["banana", "soda_can", "onion", "tomato"]
@@ -69,35 +70,61 @@ def gameQueryCallback(event):
     rospack = rospkg.RosPack()
     path_pcd = rospack.get_path('rwsfi2016_referee') + "/../pcd/"
     file_pcd = path_pcd + selected_object + ".pcd"
-    print("vou ler o " + str(file_pcd))
+    #print("vou ler o " + str(file_pcd))
 
     # pedir ao pcd2pointcloud para enviar o objeto
 
     cmd = "rosrun rwsfi2016_referee pcd2pointcloud _input:="+ file_pcd + " _output:=/object_point_cloud /map:=" + selected_player + " _one_shot:=1"
-    print "Executing command: " + cmd
+    #print "Executing command: " + cmd
     p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     for line in p.stdout.readlines():
         print line,
         p.wait()
 
-    # chamar o servico game_query
-    #service_name = "/" + selected_player + "/game_query"
-    #rospy.wait_for_service(service_name)
-    #try:
-        #game_query = rospy.ServiceProxy(service_name, GameQuery)
-        ##resp1 = add_two_ints(x, y)
-    #return resp1.sum
-        #except rospy.ServiceException, e:
-        #print "Service call failed: %s"%e
-    # verificar a resposta
-
-    # afetar a pontuacao
-
-
-    # sleep for duration
+    # sleep for duration (to make sure people get the point clouds)
     d = rospy.Duration(2, 0)
     rospy.sleep(d)
-    
+ 
+    # chamar o servico game_query
+    service_name = "/" + selected_player + "/game_query"
+    correct_response = False
+
+    try:
+        rospy.wait_for_service(service_name, 1)
+    except rospy.ROSException, e:
+        print("Perguntei " + selected_object + " ao " + selected_player + " e ele(a) nao deu resposta")
+        print("RESPOSTA AUSENTE!  ...")
+
+    try:
+        game_query = rospy.ServiceProxy(service_name, GameQuery)
+        resp1 = game_query()
+        print("Perguntei " + selected_object + " ao " + selected_player + " e ele respondeu " + resp1.resposta)
+        # verificar a resposta e afetar a pontuacao
+        if selected_object == resp1.resposta:
+            print("RESPOSTA CERTA! FANTASTICO")
+            correct_response = True
+        else:
+            print("RESPOSTA ERRADA! NAO PERCEBES NADA DISTO ...")
+    except rospy.ServiceException, e:
+        print "Service call failed: %s"%e
+
+
+    print("score before:" + str(score))
+    if correct_response == True:
+        score[selected_team_count] = score[selected_team_count] + 5 
+    else:
+        score[selected_team_count] = score[selected_team_count] - 5 
+
+
+
+    print("score after:" + str(score))
+
+
+
+
+    # sleep for duration (to make sure people get the point clouds)
+    rospy.sleep(d)
+   
     game_pause = False 
 
 def timerCallback(event):
@@ -113,7 +140,7 @@ def timerCallback(event):
 
     global teamA, teamB, teamC
     global killed
-    print("killed: " + str(killed))
+    #print("killed: " + str(killed))
 
     if len(killed)==0:
         players_killed = []
@@ -222,7 +249,7 @@ def talker():
     while not rospy.is_shutdown():
 
 
-        print killed
+        #print killed
         tic = rospy.Time.now()
         for i in killed:
             d = tic-i[1]
@@ -232,8 +259,8 @@ def talker():
                 broadcaster.sendTransform((random.random()*10 -5, random.random()*10 -5, 0), tf.transformations.quaternion_from_euler(0, 0, 0), tic, i[0], "/map")
 
 
-        print killed
-        rospy.loginfo("Checking ...")
+        #print killed
+        #rospy.loginfo("Checking ...")
 
         to_be_killed_A = [];
         to_be_killed_B = [];

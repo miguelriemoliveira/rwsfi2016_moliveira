@@ -57,7 +57,7 @@ class MyPlayer: public rwsfi2016_libs::Player
         bool queryCallback(rwsfi2016_msgs::GameQuery::Request &req, rwsfi2016_msgs::GameQuery::Response &res)
         {
             ROS_INFO("%s: game_query called", name.c_str());
-            res.resposta = "hello";
+            res.resposta = "soda_can";
 
             return true;
         }
