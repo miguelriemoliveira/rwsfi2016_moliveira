@@ -104,10 +104,8 @@ Visualization Manager:
       Namespaces:
         idomingues: true
         jleao: true
-        jsantos: true
         jxavier: true
         mcamarneiro: true
-        mmiranda: true
         mriem: true
         testeves: true
       Queue Size: 100
@@ -162,14 +160,10 @@ Visualization Manager:
       Name: QueryPointCloud
       Namespaces:
         /dcampos: true
-        /idomingues: true
-        /jleao: true
         /jsantos: true
         /jxavier: true
         /mcamarneiro: true
-        /mmiranda: true
         /mriem: true
-        /testeves: true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -226,5 +220,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 958
-  X: 63
+  X: 62
   Y: 23

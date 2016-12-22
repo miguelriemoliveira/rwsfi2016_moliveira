@@ -5,6 +5,7 @@ from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
 from std_msgs.msg import String
 from rwsfi2016_msgs.msg import MakeAPlay
+from rwsfi2016_msgs.srv import *
 import random
 import tf
 import math
@@ -34,9 +35,11 @@ teamA = []
 teamB = []
 teamC = []
 selected_team_count = 0
+game_pause = False
 
 def gameQueryCallback(event):
-    global teamA, teamB, teamC, selected_team_count
+    global teamA, teamB, teamC, selected_team_count, game_pause
+    game_pause = True 
 
     print("\n\ngameQueryCallback\n\n") 
     print("selected_team_count = " + str(selected_team_count)) 
@@ -78,14 +81,29 @@ def gameQueryCallback(event):
         p.wait()
 
     # chamar o servico game_query
-
+    #service_name = "/" + selected_player + "/game_query"
+    #rospy.wait_for_service(service_name)
+    #try:
+        #game_query = rospy.ServiceProxy(service_name, GameQuery)
+        ##resp1 = add_two_ints(x, y)
+    #return resp1.sum
+        #except rospy.ServiceException, e:
+        #print "Service call failed: %s"%e
     # verificar a resposta
 
     # afetar a pontuacao
 
 
+    # sleep for duration
+    d = rospy.Duration(2, 0)
+    rospy.sleep(d)
+    
+    game_pause = False 
 
 def timerCallback(event):
+    global game_pause
+    if game_pause == True:
+        return 
 
     #int a = 1;
     #a = 1;
